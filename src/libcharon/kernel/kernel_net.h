@@ -165,12 +165,13 @@ struct kernel_net_t {
 	 * @param gateway		gateway for this route
 	 * @param src_ip		source ip of the route
 	 * @param if_name		name of the interface the route is bound to
+	 * @param passthrough	TRUE if route is installed for passthrough policy
 	 * @return				SUCCESS if operation completed
 	 *						ALREADY_DONE if the route already exists
 	 */
 	status_t (*add_route) (kernel_net_t *this, chunk_t dst_net,
 						   uint8_t prefixlen, host_t *gateway, host_t *src_ip,
-						   char *if_name);
+						   char *if_name, bool passthrough);
 
 	/**
 	 * Delete a route.
@@ -180,11 +181,12 @@ struct kernel_net_t {
 	 * @param gateway		gateway for this route
 	 * @param src_ip		source ip of the route
 	 * @param if_name		name of the interface the route is bound to
+	 * @param passthrough	TRUE if route was installed for passthrough policy
 	 * @return				SUCCESS if operation completed
 	 */
 	status_t (*del_route) (kernel_net_t *this, chunk_t dst_net,
 						   uint8_t prefixlen, host_t *gateway, host_t *src_ip,
-						   char *if_name);
+						   char *if_name, bool passthrough);
 
 	/**
 	 * Destroy the implementation.
