@@ -299,7 +299,7 @@ static route_entry_t *route_entry_clone(route_entry_t *this)
 	route_entry_t *route;
 
 	INIT(route,
-		.if_name = strdup(this->if_name),
+		.if_name = strdupnull(this->if_name),
 		.src_ip = this->src_ip->clone(this->src_ip),
 		.gateway = this->gateway ? this->gateway->clone(this->gateway) : NULL,
 		.dst_net = chunk_clone(this->dst_net),
@@ -335,7 +335,7 @@ static u_int route_entry_hash(route_entry_t *this)
  */
 static bool route_entry_equals(route_entry_t *a, route_entry_t *b)
 {
-	if (a->if_name && b->if_name && streq(a->if_name, b->if_name) &&
+	if (streq(a->if_name, b->if_name) &&
 		a->passthrough == b->passthrough &&
 		a->src_ip->ip_equals(a->src_ip, b->src_ip) &&
 		chunk_equals(a->dst_net, b->dst_net) && a->prefixlen == b->prefixlen)
@@ -585,7 +585,7 @@ static job_requeue_t reinstall_routes(private_kernel_netlink_net_t *this)
 		net_change_t *change, lookup = {
 			.if_name = route->if_name,
 		};
-		if (route->passthrough)
+		if (route->passthrough || !route->if_name)
 		{	/* no need to reinstall these, they don't reference interfaces */
 			continue;
 		}

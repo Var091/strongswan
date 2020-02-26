@@ -412,7 +412,7 @@ static void route_entry_destroy(route_entry_t *this)
  */
 static bool route_entry_equals(route_entry_t *a, route_entry_t *b)
 {
-	if (a->if_name && b->if_name && streq(a->if_name, b->if_name) &&
+	if (streq(a->if_name, b->if_name) &&
 		a->passthrough == b->passthrough &&
 		a->src_ip->ip_equals(a->src_ip, b->src_ip) &&
 		chunk_equals(a->dst_net, b->dst_net) && a->prefixlen == b->prefixlen)
@@ -2661,8 +2661,9 @@ static void install_route(private_kernel_netlink_ipsec_t *this,
 			iface = route->src_ip;
 		}
 		if (!charon->kernel->get_interface(charon->kernel, iface,
-										   &route->if_name))
-		{
+										   &route->if_name) &&
+			!route->passthrough)
+		{	/* don't require an interface for passthrough policies */
 			route_entry_destroy(route);
 			return;
 		}
